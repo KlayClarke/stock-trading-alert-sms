@@ -40,7 +40,7 @@ close_diff = two_day_close_price[0] - two_day_close_price[1]
 percent_change = (close_diff / two_day_close_price[1])
 
 print(close_diff)
-
+print(percent_change)
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
 
@@ -58,7 +58,7 @@ articles = news_data['articles'][:3]
 
 substantial_change = False
 
-if percent_change >= .05:
+if -.05 >= percent_change >= .05:
     substantial_change = True
 
 ## STEP 3: Use https://www.twilio.com
