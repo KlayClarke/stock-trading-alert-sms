@@ -2,6 +2,9 @@ import os
 import requests
 import itertools
 
+
+UP_CHANGE_SIGN = '🔺'
+DOWN_CHANGE_SIGN = '🔻'
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
@@ -33,8 +36,10 @@ for date in two_day_data:
     two_day_dates_list.append(date)
     two_day_close_price.append(float(two_day_data[date]['4. close']))
 
-close_diff = abs(two_day_close_price[1] - two_day_close_price[0])
+close_diff = two_day_close_price[0] - two_day_close_price[1]
 percent_change = (close_diff / two_day_close_price[1])
+
+print(close_diff)
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
@@ -63,7 +68,7 @@ if substantial_change:
     for article in articles:
         title = article['title']
         description = article['description']
-        print(f'{title}, {description}')
+        print(f'{STOCK}: \n{title}, {description}')
 
 # Optional: Format the SMS message like this:
 """
