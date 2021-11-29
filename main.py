@@ -5,6 +5,7 @@ import itertools
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
+TWILIO_API_KEY = os.environ.get('TWILIO_API_KEY')
 AV_API_KEY = os.environ.get('AV_API_KEY')
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
@@ -50,13 +51,19 @@ news_data = news_response.json()
 
 articles = news_data['articles'][:3]
 
-if percent_change >= .05:
-    print(articles)
+substantial_change = False
 
+if percent_change >= .05:
+    substantial_change = True
 
 ## STEP 3: Use https://www.twilio.com
-# Send a seperate message with the percentage change and each article's title and description to your phone number. 
+# Send a seperate message with the percentage change and each article's title and description to your phone number.
 
+if substantial_change:
+    for article in articles:
+        title = article['title']
+        description = article['description']
+        print(f'{title}, {description}')
 
 # Optional: Format the SMS message like this:
 """
