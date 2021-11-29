@@ -58,17 +58,28 @@ articles = news_data['articles'][:3]
 
 substantial_change = False
 
-if -.05 >= percent_change >= .05:
+if percent_change < -.03 or percent_change > .03:
     substantial_change = True
+    print('Substantial Change is TRUE')
 
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number.
+
+CHANGE_DIRECTIONAL = None
+
+percent_change_formatted = abs(round((percent_change * 100), 2))
 
 if substantial_change:
     for article in articles:
         title = article['title']
         description = article['description']
-        print(f'{STOCK}: \n{title}, {description}')
+        if percent_change < 0:
+            CHANGE_DIRECTIONAL = DOWN_CHANGE_SIGN
+        elif percent_change_formatted > 0:
+            CHANGE_DIRECTIONAL = UP_CHANGE_SIGN
+        print(f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
+              f'Headline:{title}\nBrief: {description}')
+
 
 # Optional: Format the SMS message like this:
 """
