@@ -3,7 +3,6 @@ import requests
 import itertools
 from twilio.rest import Client
 
-
 UP_CHANGE_SIGN = '🔺'
 DOWN_CHANGE_SIGN = '🔻'
 STOCK = "TSLA"
@@ -45,8 +44,6 @@ for date in two_day_data:
 close_diff = two_day_close_price[0] - two_day_close_price[1]
 percent_change = (close_diff / two_day_close_price[1])
 
-print(close_diff)
-print(percent_change)
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
 
@@ -75,27 +72,20 @@ CHANGE_DIRECTIONAL = None
 
 percent_change_formatted = abs(round((percent_change * 100), 2))
 
-
-
 if substantial_change:
     for article in articles:
         title = article['title']
         description = article['description']
+        client = Client(twilio_account_sid, twilio_auth_token)
         if percent_change < 0:
             CHANGE_DIRECTIONAL = DOWN_CHANGE_SIGN
         elif percent_change > 0:
             CHANGE_DIRECTIONAL = UP_CHANGE_SIGN
-        print(f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
-              f'Headline:{title}\nBrief: {description}')
+        message = client.messages \
+            .create(
+            body=f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
+                 f'Headline:{title}\nBrief: {description}',
+            from_=f'{twilio_phone_number}',
+            to=f'{PERSONAL_PHONE_NUMBER}'
+        )
 
-
-# Optional: Format the SMS message like this:
-"""
-TSLA: 🔺2%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-or
-"TSLA: 🔻5%
-Headline: Were Hedge Funds Right About Piling Into Tesla Inc. (TSLA)?. 
-Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and prominent investors are required to file by the SEC The 13F filings show the funds' and investors' portfolio positions as of March 31st, near the height of the coronavirus market crash.
-"""
