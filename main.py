@@ -1,6 +1,7 @@
 import os
 import requests
 import itertools
+from twilio.rest import Client
 
 
 UP_CHANGE_SIGN = '🔺'
@@ -8,7 +9,12 @@ DOWN_CHANGE_SIGN = '🔻'
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
-TWILIO_API_KEY = os.environ.get('TWILIO_API_KEY')
+twilio_account_sid = os.environ.get('ACCOUNT_SID')
+twilio_auth_token = os.environ.get('AUTH_TOKEN')
+twilio_phone_number = os.environ.get('TWILIO_PHONE_NUMBER')
+
+PERSONAL_PHONE_NUMBER = os.environ.get('PERSONAL_PHONE_NUMBER')
+
 AV_API_KEY = os.environ.get('AV_API_KEY')
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
@@ -69,13 +75,15 @@ CHANGE_DIRECTIONAL = None
 
 percent_change_formatted = abs(round((percent_change * 100), 2))
 
+
+
 if substantial_change:
     for article in articles:
         title = article['title']
         description = article['description']
         if percent_change < 0:
             CHANGE_DIRECTIONAL = DOWN_CHANGE_SIGN
-        elif percent_change_formatted > 0:
+        elif percent_change > 0:
             CHANGE_DIRECTIONAL = UP_CHANGE_SIGN
         print(f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
               f'Headline:{title}\nBrief: {description}')
