@@ -3,8 +3,6 @@ import requests
 import itertools
 from twilio.rest import Client
 
-UP_CHANGE_SIGN = '🔺'
-DOWN_CHANGE_SIGN = '🔻'
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
@@ -45,7 +43,7 @@ close_diff = two_day_close_price[0] - two_day_close_price[1]
 percent_change = (close_diff / two_day_close_price[1])
 
 ## STEP 2: Use https://newsapi.org
-# Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
+# Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
 
 news_api_parameters = {
     'q': STOCK,
@@ -69,23 +67,21 @@ if percent_change < -.03 or percent_change > .03:
 # Send a seperate message with the percentage change and each article's title and description to your phone number.
 
 CHANGE_DIRECTIONAL = None
+if percent_change < 0:
+    CHANGE_DIRECTIONAL = '🔻'
+elif percent_change > 0:
+    CHANGE_DIRECTIONAL = '🔺'
 
 percent_change_formatted = abs(round((percent_change * 100), 2))
+articles_formatted = [f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
+                      f'Headline:{article["title"]}\nBrief: {article["description"]}' for article in articles]
 
 if substantial_change:
-    for article in articles:
-        title = article['title']
-        description = article['description']
+    for article in articles_formatted:
         client = Client(twilio_account_sid, twilio_auth_token)
-        if percent_change < 0:
-            CHANGE_DIRECTIONAL = DOWN_CHANGE_SIGN
-        elif percent_change > 0:
-            CHANGE_DIRECTIONAL = UP_CHANGE_SIGN
         message = client.messages \
             .create(
-            body=f'{STOCK}: {CHANGE_DIRECTIONAL}{percent_change_formatted}\n'
-                 f'Headline:{title}\nBrief: {description}',
+            body=article,
             from_=f'{twilio_phone_number}',
             to=f'{PERSONAL_PHONE_NUMBER}'
         )
-
