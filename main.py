@@ -17,7 +17,7 @@ NEWS_ENDPOINT = 'https://newsapi.org/v2/everything'
 parameters = {
     'function': 'TIME_SERIES_DAILY_ADJUSTED',
     'symbol': STOCK,
-    'apikey': 'AZP3JTBNUHAOYIYP'
+    'apikey': AV_API_KEY
 }
 
 response = requests.get(url=STOCK_ENDPOINT, params=parameters)
@@ -25,20 +25,34 @@ data = response.json()
 daily_data = data['Time Series (Daily)']
 two_day_data = dict(itertools.islice(daily_data.items(), 2))
 
-two_day_close_list = []
+two_day_close_price = []
+two_day_dates_list = []
 
 for date in two_day_data:
-    two_day_close_list.append(float(two_day_data[date]['4. close']))
+    two_day_dates_list.append(date)
+    two_day_close_price.append(float(two_day_data[date]['4. close']))
 
-close_diff = abs(two_day_close_list[1] - two_day_close_list[0])
-percent_change = (close_diff / two_day_close_list[1])
-print(percent_change)
-
-if percent_change > .05:
-    print('Get News')
+close_diff = abs(two_day_close_price[1] - two_day_close_price[0])
+percent_change = (close_diff / two_day_close_price[1])
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
+
+news_api_parameters = {
+    'q': STOCK,
+    'from': two_day_dates_list[0],
+    'sortBy': 'popularity',
+    'apikey': NEWS_API_KEY
+}
+
+news_response = requests.get(url=NEWS_ENDPOINT, params=news_api_parameters)
+news_data = news_response.json()
+
+articles = news_data['articles'][:3]
+
+if percent_change >= .05:
+    print(articles)
+
 
 ## STEP 3: Use https://www.twilio.com
 # Send a seperate message with the percentage change and each article's title and description to your phone number. 
