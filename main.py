@@ -21,11 +21,8 @@ parameters = {
 }
 
 response = requests.get(url=STOCK_ENDPOINT, params=parameters)
-
 data = response.json()
-
 daily_data = data['Time Series (Daily)']
-
 two_day_data = dict(itertools.islice(daily_data.items(), 2))
 
 two_day_close_list = []
@@ -34,8 +31,11 @@ for date in two_day_data:
     two_day_close_list.append(float(two_day_data[date]['4. close']))
 
 close_diff = abs(two_day_close_list[1] - two_day_close_list[0])
+percent_change = (close_diff / two_day_close_list[1])
+print(percent_change)
 
-print(close_diff)
+if percent_change > .05:
+    print('Get News')
 
 ## STEP 2: Use https://newsapi.org
 # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
